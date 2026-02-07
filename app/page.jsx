@@ -1856,12 +1856,12 @@ export default function HomePage() {
   // 检查更新
   const [hasUpdate, setHasUpdate] = useState(false);
   const [latestVersion, setLatestVersion] = useState('');
+  const [updateContent, setUpdateContent] = useState('');
 
   useEffect(() => {
     const checkUpdate = async () => {
       try {
         const res = await fetch('https://api.github.com/repos/hzm0321/real-time-fund/releases/latest');
-        console.log(packageJson.version)
         if (!res.ok) return;
         const data = await res.json();
         if (data.tag_name) {
@@ -1869,6 +1869,7 @@ export default function HomePage() {
           if (remoteVersion !== packageJson.version) {
             setHasUpdate(true);
             setLatestVersion(remoteVersion);
+            setUpdateContent(data.body || '');
           }
         }
       } catch (e) {
@@ -3579,10 +3580,9 @@ export default function HomePage() {
           <span>基估宝</span>
         </div>
         <div className="actions">
-          <img alt="项目Github地址" src={githubImg.src} style={{ width: '30px', height: '30px', cursor: 'pointer' }} onClick={() => window.open("https://github.com/hzm0321/real-time-fund")} />
           {hasUpdate && (
-            <div 
-              className="badge" 
+            <div
+              className="badge"
               title={`发现新版本 ${latestVersion}，点击前往下载`}
               style={{ cursor: 'pointer', borderColor: 'var(--success)', color: 'var(--success)' }}
               onClick={() => setUpdateModalOpen(true)}
@@ -3590,6 +3590,7 @@ export default function HomePage() {
               <UpdateIcon width="14" height="14" />
             </div>
           )}
+          <img alt="项目Github地址" src={githubImg.src} style={{ width: '30px', height: '30px', cursor: 'pointer' }} onClick={() => window.open("https://github.com/hzm0321/real-time-fund")} />
           <div className="badge" title="当前刷新频率">
             <span>刷新</span>
             <strong>{Math.round(refreshMs / 1000)}秒</strong>
@@ -4837,9 +4838,28 @@ export default function HomePage() {
                 <UpdateIcon width="20" height="20" style={{color: 'var(--success)'}} />
                 <span>更新提示</span>
               </div>
-              <p className="muted" style={{ marginBottom: 24, fontSize: '14px', lineHeight: '1.6' }}>
-                检测到新版本，是否刷新浏览器以更新
-              </p>
+              <div style={{ marginBottom: 24 }}>
+                <p className="muted" style={{ fontSize: '14px', lineHeight: '1.6', marginBottom: 12 }}>
+                  检测到新版本，是否刷新浏览器以更新？
+                  <br/>
+                  更新内容如下：
+                </p>
+                {updateContent && (
+                  <div style={{ 
+                    background: 'rgba(0,0,0,0.2)', 
+                    padding: '12px', 
+                    borderRadius: '8px',
+                    fontSize: '13px',
+                    lineHeight: '1.5',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                    whiteSpace: 'pre-wrap',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                  }}>
+                    {updateContent}
+                  </div>
+                )}
+              </div>
               <div className="row" style={{ gap: 12 }}>
                 <button 
                   className="button secondary" 
