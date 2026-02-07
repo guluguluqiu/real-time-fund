@@ -3375,7 +3375,6 @@ export default function HomePage() {
       if (updateError) throw updateError;
       
       localStorage.setItem('localUpdatedAt', now);
-          showToast(`同步云端配置异常`, 'error');
 
       if (showTip) {
         setSuccessModal({ open: true, message: '已同步云端配置' });
