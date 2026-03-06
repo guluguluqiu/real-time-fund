@@ -521,35 +521,25 @@ export default function PcFundTable({
         minSize: 100,
         cell: (info) => {
           const original = info.row.original || {};
-          const estimateValue = original.estimateChangeValue;
-          const hasTodayEstimate = original.hasTodayEstimate;
-          const holdingProfitPercentStr = original.holdingProfitPercent ?? '';
-          
-          let holdingProfitPercentValue = null;
-          if (holdingProfitPercentStr && holdingProfitPercentStr !== '') {
-            const numStr = holdingProfitPercentStr.replace(/[+%]/g, '');
-            holdingProfitPercentValue = parseFloat(numStr);
-          }
-          
-          const hasEstimate = hasTodayEstimate && estimateValue != null;
-          const hasHolding = holdingProfitPercentValue != null && !isNaN(holdingProfitPercentValue);
-          
-          if (!hasEstimate && !hasHolding) {
-            return (
-              <FitText className="muted" style={{ fontWeight: 700 }} maxFontSize={14} minFontSize={10}>
-                —
-              </FitText>
-            );
-          }
-          
-          const total = (hasEstimate ? estimateValue : 0) + (hasHolding ? holdingProfitPercentValue : 0);
-          const cls = total > 0 ? 'up' : total < 0 ? 'down' : '';
-          const displayValue = `${total > 0 ? '+' : ''}${total.toFixed(2)}%`;
-          
+          const value = original.estimateProfitValue;
+          const hasProfit = value != null;
+          const cls = hasProfit ? (value > 0 ? 'up' : value < 0 ? 'down' : '') : 'muted';
+          const amountStr = hasProfit ? (original.estimateProfit ?? '') : '—';
+          const percentStr = original.estimateProfitPercent ?? '';
+
           return (
-            <FitText className={cls} style={{ fontWeight: 700 }} maxFontSize={14} minFontSize={10}>
-              {displayValue}
-            </FitText>
+            <div style={{ width: '100%' }}>
+              <FitText className={cls} style={{ fontWeight: 700, display: 'block' }} maxFontSize={14} minFontSize={10}>
+                {amountStr}
+              </FitText>
+              {percentStr ? (
+                <span className={`${cls} estimate-profit-percent`} style={{ display: 'block', fontSize: '0.75em', opacity: 0.9, fontWeight: 500 }}>
+                  <FitText maxFontSize={11} minFontSize={9}>
+                    {percentStr}
+                  </FitText>
+                </span>
+              ) : null}
+            </div>
           );
         },
         meta: {

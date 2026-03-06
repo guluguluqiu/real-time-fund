@@ -531,39 +531,27 @@ export default function MobileFundTable({
         header: '估算收益',
         cell: (info) => {
           const original = info.row.original || {};
-          const estimateValue = original.estimateChangeValue;
-          const hasTodayEstimate = original.hasTodayEstimate;
-          const holdingProfitPercentStr = original.holdingProfitPercent ?? '';
-          
-          let holdingProfitPercentValue = null;
-          if (holdingProfitPercentStr && holdingProfitPercentStr !== '') {
-            const numStr = holdingProfitPercentStr.replace(/[+%]/g, '');
-            holdingProfitPercentValue = parseFloat(numStr);
-          }
-          
-          const hasEstimate = hasTodayEstimate && estimateValue != null;
-          const hasHolding = holdingProfitPercentValue != null && !isNaN(holdingProfitPercentValue);
-          
-          if (!hasEstimate && !hasHolding) {
-            return (
-              <span className="muted" style={{ display: 'block', width: '100%', fontWeight: 700 }}>
+          const value = original.estimateProfitValue;
+          const hasProfit = value != null;
+          const cls = hasProfit ? (value > 0 ? 'up' : value < 0 ? 'down' : '') : 'muted';
+          const amountStr = hasProfit ? (original.estimateProfit ?? '') : '—';
+          const percentStr = original.estimateProfitPercent ?? '';
+
+          return (
+            <div style={{ width: '100%' }}>
+              <span className={cls} style={{ display: 'block', width: '100%', fontWeight: 700 }}>
                 <FitText maxFontSize={14} minFontSize={10}>
-                  —
+                  {amountStr}
                 </FitText>
               </span>
-            );
-          }
-          
-          const total = (hasEstimate ? estimateValue : 0) + (hasHolding ? holdingProfitPercentValue : 0);
-          const cls = total > 0 ? 'up' : total < 0 ? 'down' : '';
-          const displayValue = `${total > 0 ? '+' : ''}${total.toFixed(2)}%`;
-          
-          return (
-            <span className={cls} style={{ display: 'block', width: '100%', fontWeight: 700 }}>
-              <FitText maxFontSize={14} minFontSize={10}>
-                {displayValue}
-              </FitText>
-            </span>
+              {percentStr ? (
+                <span className={`${cls} estimate-profit-percent`} style={{ display: 'block', width: '100%', fontSize: '0.75em', opacity: 0.9, fontWeight: 500 }}>
+                  <FitText maxFontSize={11} minFontSize={9}>
+                    {percentStr}
+                  </FitText>
+                </span>
+              ) : null}
+            </div>
           );
         },
         meta: { align: 'right', cellClassName: 'total-change-cell', width: columnWidthMap.totalChangePercent },

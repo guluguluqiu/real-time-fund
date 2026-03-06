@@ -815,6 +815,30 @@ export default function HomePage() {
             : '';
         const holdingProfitValue = total;
 
+        const holdingProfitPercentValue =
+          total != null && principal > 0 ? (total / principal) * 100 : null;
+        const hasEstimatePercent = hasTodayEstimate && estimateChangeValue != null;
+        const hasHoldingPercent = holdingProfitPercentValue != null;
+        const fallbackEstimateProfitPercentValue = hasEstimatePercent || hasHoldingPercent
+          ? (hasEstimatePercent ? estimateChangeValue : 0) + (hasHoldingPercent ? holdingProfitPercentValue : 0)
+          : null;
+        const estimateProfitPercentValue = hasTodayData
+          ? holdingProfitPercentValue
+          : fallbackEstimateProfitPercentValue;
+        const estimateProfitValue = hasTodayData
+          ? total
+          : (estimateProfitPercentValue != null && principal > 0
+            ? principal * (estimateProfitPercentValue / 100)
+            : null);
+        const estimateProfit =
+          estimateProfitValue == null
+            ? ''
+            : `${estimateProfitValue > 0 ? '+' : estimateProfitValue < 0 ? '-' : ''}¥${Math.abs(estimateProfitValue).toFixed(2)}`;
+        const estimateProfitPercent =
+          estimateProfitPercentValue == null
+            ? ''
+            : `${estimateProfitPercentValue > 0 ? '+' : ''}${estimateProfitPercentValue.toFixed(2)}%`;
+
         return {
           rawFund: f,
           code: f.code,
@@ -831,6 +855,10 @@ export default function HomePage() {
           estimateChangeMuted: f.noValuation,
           estimateTime,
           hasTodayEstimate,
+          totalChangePercent: estimateProfitPercent,
+          estimateProfit,
+          estimateProfitValue,
+          estimateProfitPercent,
           holdingAmount,
           holdingAmountValue,
           todayProfit,
